@@ -25,6 +25,15 @@ export const login = async (data) => {
   }
 };
 
+export const logout = async () => {
+  try {
+    const response = await axios.post(`${base_url}/api/users/logout`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getExclusiveProducts = async () => {
   try {
     const response = await axios.get(`${base_url}/api/products/getallproducts`);
@@ -255,4 +264,17 @@ export const getSearchProduct = async (query) => {
     console.error("Search product fetch error:", err);
     return [];
   }
+};
+
+export const getUserProfile = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("User not authenticated");
+
+  const response = await axios.get(`${base_url}/api/users/getuserprofile`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data.user;
 };

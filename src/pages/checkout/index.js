@@ -116,7 +116,7 @@ export default function CheckoutPage() {
             await createOrder(finalOrderPayload);
             await clearUserCartItem();
             toast.success("Order placed successfully!");
-            router.push("/thank-you");
+            router.push("/thankyou");
           } catch (err) {
             console.error("Verification failed:", err);
             toast.error("Payment verification failed.");

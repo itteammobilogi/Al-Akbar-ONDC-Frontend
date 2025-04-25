@@ -1,14 +1,61 @@
-import React, { useState, useEffect } from "react";
-import { Heart, ShoppingBag, User, Menu, X } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Heart,
+  ShoppingBag,
+  User,
+  Menu,
+  X,
+  LogOut,
+  PackageCheck,
+} from "lucide-react";
 import Link from "next/link";
 import SearchBox from "../Search/SearchBox";
-import { getCartByUser, getWishlistProductsByUser } from "@/utils/ApiUrlHelper";
+import {
+  getCartByUser,
+  getWishlistProductsByUser,
+  logout,
+} from "@/utils/ApiUrlHelper";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [userInitial, setUserInitial] = useState("");
   const [wishListCount, setWishListCount] = useState(0);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef();
   const [cartCount, setCartCount] = useState(0);
+  const router = useRouter();
+  // const toggleDropdown = () => {
+  //   setShowDropdown((prev) => !prev);
+  // };
+
+  const handleLogout = async () => {
+    try {
+      const res = await logout();
+      if (res.success) {
+        localStorage.removeItem("token");
+        toast.success(res.message || "Logged out successfully");
+        router.push("/auth/Login");
+      } else {
+        toast.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Logout failed");
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -20,10 +67,7 @@ function Navbar() {
 
     const fetchCounts = async () => {
       try {
-        // now we know token exists
-        // const wishlist = await getWishlistProductsByUser();
         const cart = await getCartByUser();
-        // setWishListCount(wishlist.length);
         setCartCount(cart.length || cart.items?.length || 0);
       } catch (error) {
         console.error("Error fetching counts", error);
@@ -68,8 +112,39 @@ function Navbar() {
             {/* Icons */}
             <div className="flex space-x-4 items-center text-gray-700">
               {userInitial ? (
-                <div className="w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                  {userInitial}
+                <div className="relative" ref={dropdownRef}>
+                  <div
+                    onClick={() => setShowDropdown((prev) => !prev)}
+                    className="w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center text-sm font-bold cursor-pointer"
+                  >
+                    {userInitial}
+                  </div>
+
+                  {showDropdown && (
+                    <div className="absolute right-0 mt-2 w-44 bg-white shadow-md border rounded-lg z-50">
+                      <Link
+                        href="/profile"
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-pink-50 text-gray-700"
+                      >
+                        <User className="w-4 h-4" />
+                        My Profile
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-pink-50 text-gray-700"
+                      >
+                        <PackageCheck className="w-4 h-4" />
+                        My Orders
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm hover:bg-red-50 text-red-600"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Logout
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <Link
