@@ -35,6 +35,8 @@ function Navbar() {
       const res = await logout();
       if (res.success) {
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setUserInitial("");
         toast.success(res.message || "Logged out successfully");
         router.push("/auth/Login");
       } else {
@@ -91,7 +93,9 @@ function Navbar() {
           {/* Desktop Category Links */}
           <ul className="hidden md:flex space-x-6 font-medium text-sm text-gray-700 uppercase">
             <li className="hover:text-pink-600 cursor-pointer">Men</li>
-            <li className="hover:text-pink-600 cursor-pointer">Women</li>
+            <Link href="/women/products">
+              <li className="hover:text-pink-600 cursor-pointer">Women</li>
+            </Link>
             <li className="hover:text-pink-600 cursor-pointer">Kids</li>
             <li className="hover:text-pink-600 cursor-pointer">Beauty</li>
             <li className="hover:text-pink-600 cursor-pointer">Studio</li>

@@ -1,5 +1,6 @@
 import {
   addWishListProduct,
+  autoRewardCoupon,
   getSingleProduct,
   getWishlistProductsByUser,
   handleAddProducttoCart,
@@ -32,30 +33,55 @@ export default function ProductDetail({ product }) {
   }, []);
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    alert("Link copied to clipboard!");
+    toast.success("Link copied to clipboard!");
   };
 
   const handleAddtoCart = async () => {
     try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        toast.error("You must be logged in to add to cart.");
+        console.log("User not logged in. Skipping add to cart.");
+        return;
+      }
+
       const quantity = parseInt(
         document.querySelector("input[type='number']")?.value || 1
       );
+
       const res = await handleAddProducttoCart(product.id, quantity);
       toast.success(res.message || "Added to cart!");
+
+      try {
+        const rewardRes = await autoRewardCoupon();
+
+        if (rewardRes.coupon) {
+          const { code, validTill } = rewardRes.coupon;
+          const formattedDate = new Date(validTill).toLocaleDateString(
+            "en-IN",
+            {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            }
+          );
+
+          toast.success(
+            `🎉 You earned coupon ${code} valid till ${formattedDate}`
+          );
+        }
+      } catch (rewardErr) {
+        console.log("No coupon rewarded:", rewardErr.message);
+      }
+
       router.push("/checkout");
     } catch (err) {
-      toast.error("You must be logged in to add to cart");
+      console.error("Add to cart failed:", err.message);
+      toast.error("Failed to add product to cart.");
     }
   };
 
-  // const handleAddToWishlist = async (productId) => {
-  //   try {
-  //     const res = await addWishListProduct(productId);
-  //     toast.success(res.message || "Added to wishlist!");
-  //   } catch {
-  //     toast.error("Failed to add to wishlist.");
-  //   }
-  // };
   const handleAddToWishlist = async (productId) => {
     try {
       const isAlreadyWishlisted = wishlistItems.includes(productId);
@@ -69,20 +95,30 @@ export default function ProductDetail({ product }) {
       setWishlistItems((prev) => [...prev, productId]);
       toast.success(res.message || "Added to wishlist!");
     } catch (err) {
-      toast.error("Wishlist action failed.");
+      toast.error("Please Login To Add Wishlist");
       console.error(err);
     }
   };
 
   useEffect(() => {
-    // Example: Simulate fetching wishlist productIds
     const fetchWishlist = async () => {
       try {
-        // Replace with your API call
-        const data = await getWishlistProductsByUser(); // Should return array of productIds
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.log("User not logged in. Skipping wishlist fetch.");
+          return; // 🛑 Don't call API if no token
+        }
+
+        const data = await getWishlistProductsByUser();
         setWishlistItems(data);
       } catch (err) {
-        console.error("Failed to fetch wishlist:", err);
+        if (err.response && err.response.status === 403) {
+          console.log("Unauthorized or expired token. Cannot fetch wishlist.");
+        } else {
+          console.error("Failed to fetch wishlist:", err.message);
+          // Optional: toast.error("Something went wrong fetching wishlist.");
+        }
       }
     };
 
@@ -244,7 +280,7 @@ export default function ProductDetail({ product }) {
               </div>
 
               {/* Pincode Delivery Check */}
-              <div className="flex items-center gap-2 mb-4">
+              {/* <div className="flex items-center gap-2 mb-4">
                 <input
                   type="text"
                   placeholder="Enter Pincode"
@@ -253,7 +289,7 @@ export default function ProductDetail({ product }) {
                 <button className="text-sm text-pink-600 font-semibold hover:underline cursor-pointer">
                   Check Delivery
                 </button>
-              </div>
+              </div> */}
 
               {/* Share Options */}
               <div className="flex gap-4 items-center text-sm mt-4">

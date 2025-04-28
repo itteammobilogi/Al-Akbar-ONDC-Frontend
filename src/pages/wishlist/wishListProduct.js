@@ -14,9 +14,23 @@ const WishListProduct = () => {
 
   useEffect(() => {
     const fetchWishlist = async () => {
-      const data = await getWishlistProductsByUser();
-      setWishList(data);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        // toast.error("User not logged in. Skipping wishlist fetch.");
+        toast.error("Please login to see your wishlist.");
+        return;
+      }
+
+      try {
+        const data = await getWishlistProductsByUser();
+        setWishList(data);
+      } catch (err) {
+        // console.error("Unexpected error:", err.message);
+        toast.error("Something went wrong fetching wishlist.");
+      }
     };
+
     fetchWishlist();
   }, []);
 

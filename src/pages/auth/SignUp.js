@@ -8,11 +8,13 @@ import toast from "react-hot-toast";
 import { Rocket } from "lucide-react";
 import { signup } from "@/utils/ApiUrlHelper";
 import { useRouter } from "next/router";
+import { Cake } from "lucide-react";
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [dob, setDob] = useState("");
   const router = useRouter();
 
   const handleSignup = async (e) => {
@@ -29,7 +31,7 @@ export default function Signup() {
     }
 
     try {
-      const payload = { name, email, password };
+      const payload = { name, email, password, dob };
       const res = await signup(payload);
 
       if (res && res.success) {
@@ -45,6 +47,17 @@ export default function Signup() {
       console.error("Signup error:", err);
       toast.error(
         err.response?.data?.message || "Something went wrong. Try again later."
+      );
+    }
+  };
+
+  const handleDobChange = (e) => {
+    setDob(e.target.value);
+
+    // 🎉 Show a toast when user selects date
+    if (e.target.value) {
+      toast.success(
+        "🎉 Nice! We'll surprise you with a gift on your Birthday!"
       );
     }
   };
@@ -132,6 +145,38 @@ export default function Signup() {
                 className="absolute left-4 top-3 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-focus:top-[-10px] peer-focus:text-xs peer-focus:text-green-600 bg-white px-1"
               >
                 Password
+              </label>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="relative"
+            >
+              <input
+                type="date"
+                id="dob"
+                value={dob}
+                onChange={handleDobChange}
+                className="peer w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 pl-12" // Add pl-12 for icon space
+                required
+              />
+
+              {/* Birthday Icon */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-400"
+              >
+                <Cake className="w-5 h-5" />
+              </motion.div>
+
+              <label
+                htmlFor="dob"
+                className="absolute left-12 top-3 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-focus:top-[-10px] peer-focus:text-xs peer-focus:text-green-600 bg-white px-1"
+              >
+                Date of Birth
               </label>
             </motion.div>
 

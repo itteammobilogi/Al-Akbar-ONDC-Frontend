@@ -34,38 +34,35 @@ function ExclusiveProduct() {
 
           return (
             <>
-              <div>
+              <div key={product?.id}>
                 <Link href={`/product/${product.id}`}>
-                  <div
-                    key={product.id}
-                    className="bg-white  border border-pink-200 rounded-lg shadow-md p-4 transition-transform hover:scale-105 cursor-pointer"
-                  >
+                  <div className="bg-white  border border-pink-200 rounded-lg shadow-md p-4 transition-transform hover:scale-105 cursor-pointer">
                     <div className="relative">
                       {/* <span className="absolute top-2 left-2 bg-pink-600 text-white text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
-                  Exclusive
-                </span> */}
+                    Exclusive
+                  </span> */}
 
                       {/* <Slider
-                  dots={true}
-                  arrows={false}
-                  infinite
-                  speed={300}
-                  slidesToShow={1}
-                  slidesToScroll={1}
-                  autoplay
-                  autoplaySpeed={3000}
-                  className="product-slider"
-                >
-                  {images.map((img, index) => (
-                    <div className="rounded overflow-hidden border border-gray-200">
-                      <img
-                        src={`http://localhost:5000${img}`}
-                        alt={`Product ${index}`}
-                        className="w-full h-40 object-cover"
-                      />
-                    </div>
-                  ))}
-                </Slider> */}
+                    dots={true}
+                    arrows={false}
+                    infinite
+                    speed={300}
+                    slidesToShow={1}
+                    slidesToScroll={1}
+                    autoplay
+                    autoplaySpeed={3000}
+                    className="product-slider"
+                  >
+                    {images.map((img, index) => (
+                      <div className="rounded overflow-hidden border border-gray-200">
+                        <img
+                          src={`http://localhost:5000${img}`}
+                          alt={`Product ${index}`}
+                          className="w-full h-40 object-cover"
+                        />
+                      </div>
+                    ))}
+                  </Slider> */}
                       <div className="rounded overflow-hidden bg-white flex items-center justify-center h-52">
                         <img
                           src={`http://localhost:5000${mainImage}`}

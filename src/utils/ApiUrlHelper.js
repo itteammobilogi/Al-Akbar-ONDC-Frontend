@@ -3,6 +3,7 @@
 import axios from "axios";
 
 const base_url = "http://localhost:5000";
+// const base_url = "http://ondcapi.elloweb.com";
 // const base_url = "https://plenty-eels-look.loca.lt";
 
 export const signup = async (data) => {
@@ -104,14 +105,27 @@ export const handleAddProducttoCart = async (productId, quantity) => {
 
 export const getCartByUser = async () => {
   const token = localStorage.getItem("token");
+
   if (!token) {
-    // simply return empty array rather than throw
+    // No token found → no need to call API → just return empty cart
     return [];
   }
-  const response = await axios.get(`${base_url}/api/products/cart/user`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
+
+  try {
+    const response = await axios.get(`${base_url}/api/products/cart/user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data; // assuming your backend returns array of cart items
+  } catch (error) {
+    console.error(
+      "Fetch Cart Error:",
+      error.response?.data?.message || error.message
+    );
+    return []; // Even if API call fails, return empty cart instead of crashing frontend
+  }
 };
 
 export const removeCartItem = async (productId) => {
@@ -192,8 +206,29 @@ export const clearUserCartItem = async () => {
   }
 };
 
+// export const getWishlistProductsByUser = async () => {
+//   const token = localStorage.getItem("token");
+
+//   try {
+//     const res = await axios.get(`${base_url}/api/wishlist/get/wishlist`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     return res.data || [];
+//   } catch (err) {
+//     console.error("Failed to fetch wishlist:", err);
+//     return [];
+//   }
+// };
+
 export const getWishlistProductsByUser = async () => {
   const token = localStorage.getItem("token");
+
+  if (!token) {
+    console.log("No token, skipping wishlist API call.");
+    return []; // Return empty safely
+  }
 
   try {
     const res = await axios.get(`${base_url}/api/wishlist/get/wishlist`, {
@@ -201,10 +236,10 @@ export const getWishlistProductsByUser = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return res.data;
+    return res.data || [];
   } catch (err) {
     console.error("Failed to fetch wishlist:", err);
-    return [];
+    return []; // ✅ Instead of throw err, just return []
   }
 };
 
@@ -268,13 +303,138 @@ export const getSearchProduct = async (query) => {
 
 export const getUserProfile = async () => {
   const token = localStorage.getItem("token");
-  if (!token) throw new Error("User not authenticated");
+  const response = await axios.get(`${base_url}/api/users/getuser/profile`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
 
-  const response = await axios.get(`${base_url}/api/users/getuserprofile`, {
+export const updateUserProfile = async (profileData) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.put(
+    `${base_url}/api/users/profile`,
+    profileData,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return response.data;
+};
+
+export const getUserOrdersPaginated = async (page = 1, limit = 10) => {
+  const token = localStorage.getItem("token");
+  const res = await axios.get(
+    `${base_url}/api/orders/user/orders?page=${page}&limit=${limit}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res.data;
+};
+
+export const getOrderById = async (orderId) => {
+  const token = localStorage.getItem("token");
+  const res = await axios.get(`${base_url}/api/orders/${orderId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
+};
+
+export const rewardCoupon = async (payload) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.post(`${base_url}/api/coupons/reward`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const autoRewardCoupon = async () => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.post(
+    `${base_url}/api/coupons/auto-reward`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const applyCoupon = async (couponCode, cartTotal) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await axios.post(
+      `${base_url}/api/coupons/validate/apply`,
+      {
+        couponCode,
+        cartTotal,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.coupon;
+    // Example response: { couponCode: "WELCOME50", discountAmount: 100 }
+  } catch (error) {
+    console.error(
+      "Apply coupon error:",
+      error.response?.data?.message || error.message
+    );
+    throw new Error(error.response?.data?.message || "Failed to apply coupon");
+  }
+};
+
+export const submitContactForm = async (formData) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await axios.post(
+      `${base_url}/api/contactus/send-message`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Contact Form Submit Error:",
+      error.response?.data?.message || error.message
+    );
+    throw new Error(
+      error.response?.data?.message || "Failed to submit message."
+    );
+  }
+};
+
+export const getUserCoupons = async () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  const res = await axios.get(`${base_url}/api/coupons/get/user/coupon`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  return response.data.user;
+  return res.data;
 };
