@@ -88,7 +88,7 @@ const SearchProduct = () => {
                   >
                     <div className="relative overflow-hidden rounded-t-2xl">
                       <motion.img
-                        src={`http://localhost:5000${mainImage}`}
+                        src={`https://ondcapi.elloweb.com${mainImage}`}
                         alt={product.name}
                         className="h-48 w-full object-cover transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:blur-[1px]"
                       />

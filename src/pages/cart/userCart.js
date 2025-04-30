@@ -75,7 +75,7 @@ const UserCart = () => {
                   >
                     <div className="flex gap-4 items-center">
                       <img
-                        src={`http://localhost:5000${mainImage}`}
+                        src={`https://ondcapi.elloweb.com${mainImage}`}
                         alt={item.name}
                         className="w-20 h-20 object-cover rounded-md border"
                       />

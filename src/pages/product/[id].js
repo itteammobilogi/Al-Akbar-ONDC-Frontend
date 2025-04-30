@@ -147,7 +147,7 @@ export default function ProductDetail({ product }) {
                 </span>
               ) : null}
               <img
-                src={`http://localhost:5000${images[0]}`}
+                src={`https://ondcapi.elloweb.com${images[0]}`}
                 alt={product.name}
                 className="w-full h-80 object-contain bg-white p-4"
               />

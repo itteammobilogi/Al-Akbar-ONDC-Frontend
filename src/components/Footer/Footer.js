@@ -11,7 +11,7 @@ function Footer() {
         <div>
           <Link href="/" className="">
             <h2 className="text-2xl font-bold font-serif text-pink-600 mb-3">
-              Al-Akbar
+              ZillyBuy
             </h2>
           </Link>
 
@@ -103,7 +103,7 @@ function Footer() {
 
       {/* Bottom */}
       <div className="mt-10 text-center text-xs text-gray-500">
-        © {new Date().getFullYear()} Al-Akbar. All rights reserved.
+        © {new Date().getFullYear()} ZillyBuy. All rights reserved.
       </div>
     </footer>
   );

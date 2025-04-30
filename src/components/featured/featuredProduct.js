@@ -68,7 +68,7 @@ function FeaturedProduct() {
 
                 <div className="rounded overflow-hidden">
                   <img
-                    src={`http://localhost:5000${mainImage}`}
+                    src={`https://ondcapi.elloweb.com${mainImage}`}
                     alt={`Product ${product.name}`}
                     className="w-full h-40 object-cover"
                   />

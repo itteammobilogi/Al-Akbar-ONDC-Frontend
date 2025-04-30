@@ -107,7 +107,7 @@ const WishListProduct = () => {
                     >
                       <div className="relative">
                         <img
-                          src={`http://localhost:5000${mainImage}`}
+                          src={`https://ondcapi.elloweb.com${mainImage}`}
                           alt={product.name}
                           className="rounded-xl w-full h-48 object-cover mb-4 group-hover:scale-105 transition-transform"
                         />

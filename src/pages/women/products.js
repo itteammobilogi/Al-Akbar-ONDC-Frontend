@@ -160,7 +160,7 @@ export default function ProductsPage() {
                       <div className="flex justify-center items-center h-44 overflow-hidden p-2 cursor-pointer">
                         <img
                           src={
-                            `http://localhost:5000${mainImage}` ||
+                            `https://ondcapi.elloweb.com${mainImage}` ||
                             "/placeholder.png"
                           }
                           alt={product.name}

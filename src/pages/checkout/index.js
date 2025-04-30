@@ -741,7 +741,7 @@ export default function CheckoutPage() {
                       className="flex justify-between items-center gap-4 border-b pb-4"
                     >
                       <img
-                        src={`http://localhost:5000${mainImage}`}
+                        src={`https://ondcapi.elloweb.com${mainImage}`}
                         alt={item.name}
                         className="w-16 h-16 object-cover rounded-md border"
                       />

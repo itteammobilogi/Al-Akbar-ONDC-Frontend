@@ -86,7 +86,7 @@ function Navbar() {
           {/* Logo */}
           <div className="text-2xl font-bold text-pink-600 tracking-wide">
             <Link href="/" className="">
-              Al-Akbar
+              ZillyBuy
             </Link>
           </div>
 
