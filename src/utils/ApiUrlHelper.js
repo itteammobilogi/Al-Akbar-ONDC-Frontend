@@ -2,8 +2,8 @@
 
 import axios from "axios";
 
-const base_url = "http://localhost:5000";
-// const base_url = "http://ondcapi.elloweb.com";
+// const base_url = "http://localhost:5000";
+const base_url = "https://ondcapi.elloweb.com";
 // const base_url = "https://plenty-eels-look.loca.lt";
 
 export const signup = async (data) => {
@@ -35,14 +35,46 @@ export const logout = async () => {
   }
 };
 
+// export const getExclusiveProducts = async () => {
+//   try {
+//     const response = await axios.get(`${base_url}/api/products/getallproducts`);
+
+//     const exclusiveProductData = response.data.filter(
+//       (products) => products.is_exclusive === 1
+//     );
+//     return exclusiveProductData;
+//   } catch (error) {
+//     console.error("Exclusive products fetch error:", error);
+//     throw error;
+//   }
+// };
+
+// export const getFeaturedProducts = async () => {
+//   try {
+//     const response = await axios.get(`${base_url}/api/products/getallproducts`);
+
+//     const featuredProductData = response.data.filter(
+//       (products) => products.isFeatured === 1
+//     );
+//     return featuredProductData;
+//   } catch (error) {
+//     console.error("Exclusive products fetch error:", error);
+//     throw error;
+//   }
+// };
+
 export const getExclusiveProducts = async () => {
   try {
-    const response = await axios.get(`${base_url}/api/products/getallproducts`);
-
-    const exclusiveProductData = response.data.filter(
-      (products) => products.is_exclusive === 1
+    const response = await axios.get(
+      `${base_url}/api/products/getallproducts`,
+      {
+        params: {
+          exclusive: 1, // ✅ Send exclusive filter in query params
+        },
+      }
     );
-    return exclusiveProductData;
+
+    return response.data; // Already exclusive products only
   } catch (error) {
     console.error("Exclusive products fetch error:", error);
     throw error;
@@ -51,15 +83,33 @@ export const getExclusiveProducts = async () => {
 
 export const getFeaturedProducts = async () => {
   try {
-    const response = await axios.get(`${base_url}/api/products/getallproducts`);
-
-    const featuredProductData = response.data.filter(
-      (products) => products.isFeatured === 1
+    const response = await axios.get(
+      `${base_url}/api/products/getallproducts`,
+      {
+        params: {
+          isFeatured: 1,
+        },
+      }
     );
-    return featuredProductData;
+
+    return response.data;
   } catch (error) {
-    console.error("Exclusive products fetch error:", error);
+    console.error("Featured products fetch error:", error);
     throw error;
+  }
+};
+
+export const getAllProducts = async (filters = {}) => {
+  try {
+    const resposne = await axios.get(
+      `${base_url}/api/products/getallproducts`,
+      {
+        params: filters,
+      }
+    );
+    return resposne.data;
+  } catch (error) {
+    console.log(error);
   }
 };
 
