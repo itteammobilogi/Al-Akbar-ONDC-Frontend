@@ -147,7 +147,7 @@ export default function ProductDetail({ product }) {
                 </span>
               ) : null}
               <img
-                src={`https://ondcapi.elloweb.com${images[0]}`}
+                src={`https://ondcapi.elloweb.com/${images[0]}`}
                 alt={product.name}
                 className="w-full h-80 object-contain bg-white p-4"
               />
@@ -329,13 +329,22 @@ export async function getServerSideProps(context) {
   const { id } = context.params;
 
   try {
-    const product = await getSingleProduct(id);
+    const res = await fetch(
+      `http://ondcapi.elloweb.com/api/products/single/product/${id}`
+    );
+    const data = await res.json();
 
-    return {
-      props: { product },
-    };
+    if (res.ok && !data.error) {
+      return {
+        props: { product: data },
+      };
+    } else {
+      return {
+        props: { product: null },
+      };
+    }
   } catch (err) {
-    console.error("Failed to fetch product:", err);
+    console.error("SSR Fetch error:", err.message);
     return {
       props: { product: null },
     };

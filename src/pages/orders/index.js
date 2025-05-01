@@ -138,7 +138,7 @@ export default function MyOrdersPage() {
                           className="flex gap-4 items-center border-b pb-4"
                         >
                           <img
-                            src={`http://localhost:5000${mainImage}`}
+                            src={`https://ondcapi.elloweb.com${mainImage}`}
                             alt={item.productName}
                             className="w-20 h-20 object-cover rounded-md border"
                           />

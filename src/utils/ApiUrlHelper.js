@@ -2,8 +2,8 @@
 
 import axios from "axios";
 
-// const base_url = "http://localhost:5000";
-const base_url = "https://ondcapi.elloweb.com";
+// const base_url = "http://localhost:3008";
+const base_url = "http://ondcapi.elloweb.com";
 // const base_url = "https://plenty-eels-look.loca.lt";
 
 export const signup = async (data) => {
@@ -215,7 +215,7 @@ export const createOrder = async (orderData) => {
 
 export const createRazorpayOrder = async (payload) => {
   const token = localStorage.getItem("token");
-  console.log("👉 createRazorpayOrder token:", token);
+  // console.log(" createRazorpayOrder token:", token);
   if (!token) {
     throw new Error("No auth token found — user not logged in");
   }
