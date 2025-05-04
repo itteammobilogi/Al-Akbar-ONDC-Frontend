@@ -9,9 +9,25 @@ import {
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
+import { logout } from "@/utils/ApiUrlHelper";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 const AdminLayout = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      localStorage.clear();
+      toast.success("Logged Out Successfully");
+      router.push("/auth/Login");
+    } catch (error) {
+      toast.error("Logout failed Dus to some technical issue!");
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white font-sans">
@@ -45,7 +61,7 @@ const AdminLayout = ({ children }) => {
           <Link href="/admin/order">
             <NavItem icon={<PackageSearch size={18} />} label="Orders" />
           </Link>
-          <div onClick={() => alert("Logging out")}>
+          <div onClick={handleLogout}>
             <NavItem icon={<LogOut size={18} />} label="Logout" />
           </div>
         </nav>
