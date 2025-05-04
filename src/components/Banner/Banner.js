@@ -49,17 +49,15 @@ function Banner() {
   };
 
   return (
-    <div className="mt-0 overflow-hidden relative">
-      <Slider {...settings} className="banner-slider">
+    <div className="relative w-full h-[50vh] md:h-[50vh] lg:h-[50vh] overflow-hidden">
+      <Slider {...settings} className="banner-slider h-full">
         {bannerImages.map((src, index) => (
-          <div key={index}>
-            <div className="w-full aspect-[16/9] md:aspect-[21/9]">
-              <img
-                src={src}
-                alt={`Banner ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
+          <div key={index} className="w-full h-full">
+            <img
+              src={src}
+              alt={`Banner ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
           </div>
         ))}
       </Slider>
