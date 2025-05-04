@@ -65,7 +65,8 @@ function ExclusiveProduct() {
                   </Slider> */}
                       <div className="rounded overflow-hidden bg-white flex items-center justify-center h-52">
                         <img
-                          src={`https://ondcapi.elloweb.com${mainImage}`}
+                          // src={`https://ondcapi.elloweb.com${mainImage}`}
+                          src={`http://ondcapi.elloweb.com${mainImage}`}
                           alt={`Product ${product.name}`}
                           className="object-contain w-full h-full"
                         />

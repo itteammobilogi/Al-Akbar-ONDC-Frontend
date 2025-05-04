@@ -115,14 +115,14 @@ export default function MyOrdersPage() {
                       }`}
                     >
                       {order.orderStatus === 0
-                        ? "Pending"
+                        ? "🕐 Pending"
                         : order.orderStatus === 1
-                        ? "Processing"
+                        ? "🚚 Processing"
                         : order.orderStatus === 2
-                        ? "Shipped"
+                        ? "📦 Shipped"
                         : order.orderStatus === 3
-                        ? "Delivered"
-                        : "Unknown"}
+                        ? "✅ Delivered"
+                        : "❓ Unknown"}
                     </span>
                   </div>
 

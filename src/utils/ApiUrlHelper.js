@@ -488,3 +488,116 @@ export const getUserCoupons = async () => {
 
   return res.data;
 };
+
+export const deleteProductById = async (id) => {
+  return await axios.delete(`${base_url}/api/products/delete/product/${id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+};
+
+export const editProductById = async (id, formData) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await axios.put(
+      `${base_url}/api/products/update/product/${id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Update product failed:", error.response?.data || error);
+    throw error;
+  }
+};
+export const createProduct = async (formData) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.post(
+      `${base_url}/api/products/create/product`, // ← fixed slash
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Create Product API error:", error);
+    throw error.response?.data || error;
+  }
+};
+
+export const getAllOrders = async (filters = {}) => {
+  try {
+    const token = localStorage.getItem("token");
+    const params = new URLSearchParams();
+
+    // Ensure correct query param names
+    if (filters.orderStatus !== undefined && filters.orderStatus !== null) {
+      params.append("orderStatus", filters.orderStatus);
+    }
+
+    if (filters.paymentStatus !== "") {
+      params.append("paymentStatus", filters.paymentStatus);
+    }
+
+    if (filters.startDate) {
+      params.append("startDate", filters.startDate);
+    }
+
+    if (filters.endDate) {
+      params.append("endDate", filters.endDate);
+    }
+
+    if (filters.search) {
+      params.append("search", filters.search);
+    }
+
+    const response = await axios.get(
+      `${base_url}/api/orders/admin/getallorders?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response?.data?.orders || response.data;
+  } catch (error) {
+    console.error("Error fetching filtered orders:", error);
+    throw error.response?.data || error;
+  }
+};
+
+export const updateOrderStatus = async (orderId, status) => {
+  const res = await fetch(`${base_url}/api/orders/${orderId}/status`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  if (!res.ok) throw new Error("Failed to update status");
+  return await res.json();
+};
+
+export const getDashboardStats = async () => {
+  const token = localStorage.getItem("token");
+  const res = await axios.get(`${base_url}/api/admin/dashboard/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};

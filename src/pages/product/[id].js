@@ -330,7 +330,7 @@ export async function getServerSideProps(context) {
 
   try {
     const res = await fetch(
-      `http://ondcapi.elloweb.com/api/products/single/product/${id}`
+      `http:localhost:3008/api/products/single/product/${id}`
     );
     const data = await res.json();
 
