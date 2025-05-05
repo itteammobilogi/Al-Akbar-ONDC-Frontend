@@ -4,7 +4,7 @@ import ExclusiveProduct from "@/components/exclusive/ExclusiveProduct";
 import FeaturedProduct from "@/components/featured/featuredProduct";
 import Footer from "@/components/Footer/Footer";
 import Navbar from "@/components/Navbar/Navbar";
-import RewardBanner from "@/components/RewardBanner";
+// import RewardBanner from "@/components/RewardBanner";
 import WhyChooseUs from "@/components/WhyChooseUs/WhyChooseUs";
 import React from "react";
 
@@ -15,9 +15,9 @@ function MainHome() {
         <div>
           <Navbar />
         </div>
-        <div>
+        {/* <div>
           <RewardBanner />
-        </div>
+        </div> */}
         <div>
           <Banner />
         </div>

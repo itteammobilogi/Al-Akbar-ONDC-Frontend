@@ -452,6 +452,99 @@ export default function CheckoutPage() {
     }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (cartItems.length === 0) {
+  //     toast.error("Cart is empty.");
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoading(true);
+
+  //     const razorpayReady = await loadRazorpayScript();
+  //     if (!razorpayReady) {
+  //       toast.error("Failed to load Razorpay. Please try again.");
+  //       return;
+  //     }
+
+  //     const payload = {
+  //       amount: grandTotal,
+  //       totalDiscountAmount: discountAmount,
+  //       shippingCharge: shipping,
+  //       couponCode: appliedCoupon || null,
+  //     };
+
+  //     const { order } = await createRazorpayOrder(payload);
+
+  //     const rzp = new window.Razorpay({
+  //       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+  //       amount: order.amount,
+  //       currency: order.currency,
+  //       name: "Al-Akbar",
+  //       description: "Order Payment",
+  //       order_id: order.id,
+  //       handler: async function (response) {
+  //         try {
+  //           await verifyRazorpaySignature({
+  //             razorpay_order_id: response.razorpay_order_id,
+  //             razorpay_payment_id: response.razorpay_payment_id,
+  //             razorpay_signature: response.razorpay_signature,
+  //           });
+
+  //           const finalOrderPayload = {
+  //             totalAmount: grandTotal,
+  //             paymentMethod: "RAZORPAY",
+  //             paymentStatus: "paid",
+  //             totalDiscountAmount: discountAmount,
+  //             shippingCharge: shipping,
+  //             couponCode: appliedCoupon || null,
+  //             rto: false,
+  //             phone: form.phone,
+  //             country: form.country,
+  //             state: form.state,
+  //             city: form.city,
+  //             address: form.address,
+  //             pincode: form.pincode,
+  //             items: cartItems.map((item) => ({
+  //               productId: item.productId,
+  //               quantity: item.quantity,
+  //               price: item.price,
+  //             })),
+  //           };
+
+  //           await createOrder(finalOrderPayload);
+  //           await clearUserCartItem();
+  //           toast.success("Order placed successfully!");
+  //           router.push("/thankyou");
+  //         } catch (err) {
+  //           console.error("Verification failed:", err);
+  //           toast.error("Payment verification failed.");
+  //         }
+  //       },
+  //       prefill: {
+  //         name: form.name,
+  //         email: form.email,
+  //         contact: form.phone,
+  //       },
+  //       notes: {
+  //         address: form.address,
+  //       },
+  //       theme: {
+  //         color: "#F37254",
+  //       },
+  //     });
+
+  //     rzp.open();
+  //   } catch (error) {
+  //     console.error("Checkout error:", error);
+  //     toast.error("Something went wrong.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -469,15 +562,44 @@ export default function CheckoutPage() {
         return;
       }
 
-      const payload = {
+      // Step 1: Create internal order in your DB
+      const finalOrderPayload = {
+        totalAmount: grandTotal,
+        paymentMethod: "RAZORPAY",
+        paymentStatus: "pending", // Mark as pending until payment is captured
+        totalDiscountAmount: discountAmount,
+        shippingCharge: shipping,
+        couponCode: appliedCoupon || null,
+        rto: false,
+        phone: form.phone,
+        country: form.country,
+        state: form.state,
+        city: form.city,
+        address: form.address,
+        pincode: form.pincode,
+        items: cartItems.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      };
+
+      const createdOrder = await createOrder(finalOrderPayload);
+      const savedOrderId = createdOrder.orderId; // from backend response
+
+      // Step 2: Create Razorpay order using savedOrderId in notes
+      const { order } = await createRazorpayOrder({
         amount: grandTotal,
         totalDiscountAmount: discountAmount,
         shippingCharge: shipping,
         couponCode: appliedCoupon || null,
-      };
+        notes: {
+          orderId: savedOrderId,
+          userId: createdOrder.userId,
+        },
+      });
 
-      const { order } = await createRazorpayOrder(payload);
-
+      // Step 3: Launch Razorpay checkout
       const rzp = new window.Razorpay({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
         amount: order.amount,
@@ -493,28 +615,7 @@ export default function CheckoutPage() {
               razorpay_signature: response.razorpay_signature,
             });
 
-            const finalOrderPayload = {
-              totalAmount: grandTotal,
-              paymentMethod: "RAZORPAY",
-              paymentStatus: "paid",
-              totalDiscountAmount: discountAmount,
-              shippingCharge: shipping,
-              couponCode: appliedCoupon || null,
-              rto: false,
-              phone: form.phone,
-              country: form.country,
-              state: form.state,
-              city: form.city,
-              address: form.address,
-              pincode: form.pincode,
-              items: cartItems.map((item) => ({
-                productId: item.productId,
-                quantity: item.quantity,
-                price: item.price,
-              })),
-            };
-
-            await createOrder(finalOrderPayload);
+            // Payment verified: Clear cart
             await clearUserCartItem();
             toast.success("Order placed successfully!");
             router.push("/thankyou");

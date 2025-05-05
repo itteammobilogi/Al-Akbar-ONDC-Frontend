@@ -69,7 +69,7 @@ export const getExclusiveProducts = async () => {
       `${base_url}/api/products/getallproducts`,
       {
         params: {
-          exclusive: 1, // ✅ Send exclusive filter in query params
+          exclusive: 1,
         },
       }
     );

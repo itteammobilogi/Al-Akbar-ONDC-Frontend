@@ -7,15 +7,15 @@ export default function RewardBanner() {
       toast("🎉 Reminder: Buy 2 or more products and get ₹100 OFF!", {
         icon: "🎁",
         duration: 3000,
-        position: "top-center", // ✅ Toast box in center
+        position: "top-center",
         style: {
-          background: "#ffe4e6", // Light pink
-          color: "#be123c", // Dark pink text
+          background: "#ffe4e6",
+          color: "#be123c",
           fontWeight: "bold",
           fontSize: "14px",
         },
       });
-    }, 5000); // every 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);

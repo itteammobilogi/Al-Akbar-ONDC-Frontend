@@ -8,7 +8,6 @@ import {
 import AdminLayout from "@/components/Sidebar/Sidebar";
 import { Edit3, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
-import { PencilLine, PlusCircle } from "lucide-react";
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
