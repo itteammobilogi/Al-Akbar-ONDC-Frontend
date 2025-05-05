@@ -36,22 +36,45 @@ const ProductPage = () => {
 
   // Stub functions for handling edit and delete actions
   const handleEdit = (id) => {
-    console.log("Edit product", id);
-    const editProduct = products.find((p) => p.id === id);
-    setEditProduct(editProduct);
+    if (!window.confirm("Are you sure you want to edit this product?")) return;
+
+    const product = products.find((p) => p.id === id);
+
+    const safeParse = (value, fallback = []) => {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return fallback;
+      }
+    };
+
+    setEditProduct({
+      ...product,
+      sizes: safeParse(product.sizes),
+      colors: safeParse(product.colors),
+      images: safeParse(product.images),
+      categoryId: Array.isArray(product.categoryId)
+        ? product.categoryId
+        : safeParse(product.categoryId, []),
+    });
 
     setEditModal(true);
   };
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (!confirmDelete) return;
+
     try {
       const res = await deleteProductById(id);
-      console.log("Delete Response ✅:", res);
+      console.log("Delete Response :", res);
       setProducts((prev) => prev.filter((p) => p.id !== id));
       toast.success(res.message || "Product deleted");
     } catch (error) {
-      console.error("Delete failed ❌:", error);
-      alert("Error deleting product");
+      console.error("Delete failed:", error);
+      toast.error("Error deleting product");
     }
   };
 
@@ -88,7 +111,13 @@ const ProductPage = () => {
           <h2 className="text-3xl font-extrabold text-teal-400">
             All Products
           </h2>
-          <button className="bg-gradient-to-r from-purple-700 via-fuchsia-600 to-pink-500 text-white font-semibold px-5 py-2 rounded shadow-lg hover:scale-105 transition-all">
+          <button
+            className="bg-gradient-to-r from-purple-700 via-fuchsia-600 to-pink-500 text-white font-semibold px-5 py-2 rounded shadow-lg hover:scale-105 transition-all"
+            onClick={() => {
+              setEditProduct(null); // reset product
+              setEditModal(true); // open modal
+            }}
+          >
             Add Product
           </button>
         </div>
@@ -211,6 +240,147 @@ const ProductPage = () => {
             >
               Next
             </button>
+          </div>
+        )}
+        {editModal && (
+          <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-70 overflow-auto pt-10">
+            <div className="bg-gray-900 text-white w-full max-w-3xl mx-4 rounded-lg shadow-xl p-6 relative">
+              <button
+                className="absolute top-2 right-2 text-white hover:text-red-400 text-2xl"
+                onClick={() => {
+                  setEditModal(false);
+                  setEditProduct(null);
+                }}
+              >
+                &times;
+              </button>
+
+              <h3 className="text-2xl font-bold mb-6 text-teal-300">
+                {editProduct ? "Edit Product" : "Add Product"}
+              </h3>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="name"
+                    defaultValue={editProduct?.name || ""}
+                    placeholder="Product Name"
+                    className="bg-gray-800 border border-gray-700 p-2 rounded"
+                    required
+                  />
+
+                  <input
+                    type="number"
+                    name="price"
+                    defaultValue={editProduct?.price || ""}
+                    placeholder="Price"
+                    className="bg-gray-800 border border-gray-700 p-2 rounded"
+                    required
+                  />
+
+                  <input
+                    type="number"
+                    name="discountPrice"
+                    defaultValue={editProduct?.discountPrice || ""}
+                    placeholder="Discount Price"
+                    className="bg-gray-800 border border-gray-700 p-2 rounded"
+                  />
+
+                  <input
+                    type="text"
+                    name="offerType"
+                    defaultValue={editProduct?.offerType || ""}
+                    placeholder="Offer Type"
+                    className="bg-gray-800 border border-gray-700 p-2 rounded"
+                  />
+
+                  <input
+                    type="text"
+                    name="categoryId"
+                    defaultValue={editProduct?.categoryId || ""}
+                    placeholder="Category ID"
+                    className="bg-gray-800 border border-gray-700 p-2 rounded"
+                  />
+
+                  <input
+                    type="text"
+                    name="brand"
+                    defaultValue={editProduct?.brand || ""}
+                    placeholder="Brand"
+                    className="bg-gray-800 border border-gray-700 p-2 rounded"
+                  />
+
+                  <input
+                    type="text"
+                    name="sizes"
+                    defaultValue={editProduct?.sizes?.join(", ") || ""}
+                    placeholder="Sizes (comma separated)"
+                    className="bg-gray-800 border border-gray-700 p-2 rounded"
+                  />
+
+                  <input
+                    type="text"
+                    name="colors"
+                    defaultValue={editProduct?.colors?.join(", ") || ""}
+                    placeholder="Colors (comma separated)"
+                    className="bg-gray-800 border border-gray-700 p-2 rounded"
+                  />
+
+                  <input
+                    type="number"
+                    name="stock"
+                    defaultValue={editProduct?.stock || ""}
+                    placeholder="Stock"
+                    className="bg-gray-800 border border-gray-700 p-2 rounded"
+                  />
+
+                  <input
+                    type="file"
+                    name="images"
+                    multiple
+                    className="bg-gray-800 border border-gray-700 p-2 rounded text-white"
+                  />
+                </div>
+
+                <textarea
+                  name="description"
+                  defaultValue={editProduct?.description || ""}
+                  placeholder="Product Description"
+                  className="w-full bg-gray-800 border border-gray-700 p-2 rounded"
+                  rows={4}
+                />
+
+                <div className="flex gap-4 items-center">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name="isFeatured"
+                      defaultChecked={editProduct?.isFeatured === 1}
+                      className="accent-teal-600"
+                    />
+                    Featured
+                  </label>
+
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name="is_exclusive"
+                      defaultChecked={editProduct?.is_exclusive === 1}
+                      className="accent-pink-600"
+                    />
+                    Exclusive
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full mt-4 py-2 bg-gradient-to-r from-purple-700 via-fuchsia-600 to-pink-500 text-white rounded font-semibold hover:scale-105 transition"
+                >
+                  {editProduct ? "Update Product" : "Add Product"}
+                </button>
+              </form>
+            </div>
           </div>
         )}
       </div>

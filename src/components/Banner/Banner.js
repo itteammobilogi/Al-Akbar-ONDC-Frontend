@@ -49,8 +49,8 @@ function Banner() {
   };
 
   return (
-    <div className="relative w-full h-[50vh] md:h-[50vh] lg:h-[50vh] overflow-hidden">
-      <Slider {...settings} className="banner-slider h-full">
+    <div className="relative w-full aspect-[16/9] sm:h-[70vh] overflow-hidden">
+      <Slider {...settings} className="banner-slider w-full h-full">
         {bannerImages.map((src, index) => (
           <div key={index} className="w-full h-full">
             <img
