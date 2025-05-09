@@ -776,7 +776,7 @@ const ProductPage = () => {
                         if (mainImage) {
                           return (
                             <img
-                              src={`http://localhost:3008${mainImage}`}
+                              src={`https://ondcapi.elloweb.com${mainImage}`}
                               alt={product.name}
                               className="w-12 h-12 object-cover rounded shadow-md"
                             />
@@ -1053,7 +1053,7 @@ const ProductPage = () => {
                         />
                         {variant.images ? (
                           <img
-                            src={`http://localhost:3008/uploads${variant.images}`}
+                            src={`http://ondcapi.elloweb.com/uploads${variant.images}`}
                             alt="Variant"
                             className="mt-2 w-12 h-12 object-cover rounded border"
                           />
