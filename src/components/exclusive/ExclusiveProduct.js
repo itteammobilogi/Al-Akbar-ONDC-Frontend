@@ -46,7 +46,7 @@ function ExclusiveProduct() {
                     <div className="bg-white border border-pink-200 rounded-lg shadow-md p-4 transition-transform hover:scale-105 cursor-pointer">
                       <div className="rounded overflow-hidden bg-white flex items-center justify-center h-52">
                         <img
-                          src={`http://ondcapi.elloweb.com${mainImage}`}
+                          src={`http://localhost:3008${mainImage}`}
                           alt={`Product ${product.name}`}
                           className="object-contain w-full h-full"
                         />

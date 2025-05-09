@@ -1,7 +1,6 @@
 import {
   addWishListProduct,
   autoRewardCoupon,
-  getSingleProduct,
   getWishlistProductsByUser,
   handleAddProducttoCart,
 } from "@/utils/ApiUrlHelper";
@@ -20,12 +19,16 @@ export default function ProductDetail({ product }) {
   const [shareLink, setShareLink] = useState("");
   const [wishlistItems, setWishlistItems] = useState([]);
   const [quantity, setQuantity] = useState(1);
-  const unitPrice = parseFloat(product.discountPrice || product.price);
+  const unitPrice = parseFloat(product?.discountPrice || product?.price);
   const totalAmount = (unitPrice * quantity).toFixed(2);
+  const [selectedVariant, setSelectedVariant] = useState(
+    product?.variants?.[0] || null
+  );
 
-  const images = JSON.parse(product.images || "[]");
-  const colors = JSON.parse(product.colors || "[]");
-  const sizes = ["S", "M", "L", "XL"]; // Mocked until you receive from backend
+  const images = JSON.parse(product?.images || "[]");
+  const colors = JSON.parse(product?.colors || "[]");
+  const sizes = ["S", "M", "L", "XL"];
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setShareLink(window.location.href);
@@ -125,7 +128,7 @@ export default function ProductDetail({ product }) {
     fetchWishlist();
   }, []);
 
-  const isWishlisted = wishlistItems.includes(product.id);
+  const isWishlisted = wishlistItems.includes(product?.id);
 
   return (
     <div>
@@ -141,14 +144,21 @@ export default function ProductDetail({ product }) {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             {/* Product Image */}
             <div className="rounded-xl overflow-hidden border border-pink-100 shadow-sm relative">
-              {product.is_exclusive ? (
+              {product?.is_exclusive ? (
                 <span className="absolute top-2 left-2 bg-pink-600 text-white text-xs font-bold px-2 py-1 rounded">
                   Exclusive
                 </span>
               ) : null}
+              {/* <img
+                src={`http://localhost:3008${images[0]}`}
+                alt={product?.name}
+                className="w-full h-80 object-contain bg-white p-4"
+              /> */}
               <img
-                src={`https://ondcapi.elloweb.com/${images[0]}`}
-                alt={product.name}
+                src={`http://localhost:3008${
+                  selectedVariant?.images[0] || images[0]
+                }`}
+                alt={product?.name}
                 className="w-full h-80 object-contain bg-white p-4"
               />
             </div>
@@ -156,16 +166,16 @@ export default function ProductDetail({ product }) {
             {/* Product Details */}
             <div>
               <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                {product.name}
+                {product?.name}
               </h1>
 
               <p className="text-sm text-gray-600 mb-3">
-                {product.description}
+                {product?.description}
               </p>
 
-              {product.offerType && (
+              {product?.offerType && (
                 <p className="inline-block mb-2 text-xs font-medium bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-                  {product.offerType}
+                  {product?.offerType}
                 </p>
               )}
 
@@ -174,9 +184,9 @@ export default function ProductDetail({ product }) {
                   <p className="text-pink-600 font-bold text-2xl">
                     ₹{totalAmount}
                   </p>
-                  {product.discountPrice && (
+                  {product?.discountPrice && (
                     <p className="text-gray-400 text-base line-through">
-                      ₹{(parseFloat(product.price) * quantity).toFixed(2)}
+                      ₹{(parseFloat(product?.price) * quantity).toFixed(2)}
                     </p>
                   )}
                 </div>
@@ -204,8 +214,53 @@ export default function ProductDetail({ product }) {
                 </div>
               )}
 
+              {/* product variants start here  */}
+
+              {product?.variants?.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm font-medium mb-1 text-gray-700">
+                    Select Color:{" "}
+                    <span className="text-sm font-medium mb-1 text-gray-700">
+                      Available Colors:
+                    </span>
+                  </p>
+                  <div className="flex gap-2">
+                    {product.variants.map((variant) => (
+                      <div
+                        key={variant.id}
+                        onClick={() => setSelectedVariant(variant)}
+                        className={`w-8 h-8 rounded-full border-2 cursor-pointer transition ${
+                          selectedVariant?.id === variant.id
+                            ? "border-pink-500 ring-2 ring-pink-300"
+                            : "border-gray-300"
+                        }`}
+                        style={{ backgroundColor: variant.color.toLowerCase() }}
+                        title={variant.color}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              <p
+                className={`mb-4 text-sm font-semibold ${
+                  selectedVariant?.stock > 0 ? "text-green-600" : "text-red-500"
+                }`}
+              >
+                {selectedVariant?.stock > 0
+                  ? `In Stock (${selectedVariant.stock} available)`
+                  : "Out of Stock"}
+              </p>
+
+              {selectedVariant?.stock > 0 &&
+                selectedVariant.stock <= product?.inventoryAlertThreshold && (
+                  <p className="text-red-600 text-sm font-medium mb-4">
+                    Hurry! Only {selectedVariant.stock} left in stock.
+                  </p>
+                )}
+
+              {/* product variants end here  */}
               {/* Colors */}
-              {colors.length > 0 && (
+              {/* {colors.length > 0 && (
                 <div className="mb-4">
                   <p className="text-sm font-medium mb-1 text-gray-700">
                     Available Colors:
@@ -221,7 +276,7 @@ export default function ProductDetail({ product }) {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Quantity */}
               <div className="flex items-center gap-2 mb-4">
@@ -239,21 +294,21 @@ export default function ProductDetail({ product }) {
               </div>
 
               {/* Stock Info */}
-              <p
+              {/* <p
                 className={`mb-4 text-sm font-semibold ${
-                  product.stock > 0 ? "text-green-600" : "text-red-500"
+                  product?.stock > 0 ? "text-green-600" : "text-red-500"
                 }`}
               >
-                {product.stock > 0
-                  ? `In Stock (${product.stock} available)`
+                {product?.stock > 0
+                  ? `In Stock (${product?.stock} available)`
                   : "Out of Stock"}
-              </p>
+              </p> */}
 
               {/* Low stock alert */}
-              {product.stock > 0 &&
-                product.stock <= product.inventoryAlertThreshold && (
+              {product?.stock > 0 &&
+                product?.stock <= product?.inventoryAlertThreshold && (
                   <p className="text-red-600 text-sm font-medium mb-4">
-                    Hurry! Only {product.stock} left in stock.
+                    Hurry! Only {product?.stock} left in stock.
                   </p>
                 )}
 
@@ -267,7 +322,7 @@ export default function ProductDetail({ product }) {
                   Add to Cart
                 </button>
                 <button
-                  onClick={() => handleAddToWishlist(product.id)}
+                  onClick={() => handleAddToWishlist(product?.id)}
                   className="flex items-center gap-2 border border-pink-600 text-pink-600 hover:bg-pink-50 px-5 py-2 rounded-full font-medium transition-all duration-300 shadow-md cursor-pointer"
                 >
                   {isWishlisted ? (
@@ -324,29 +379,20 @@ export default function ProductDetail({ product }) {
     </div>
   );
 }
+export async function getServerSideProps({ params }) {
+  const res = await fetch(
+    `http://localhost:3008/api/products/single/product/${params.id}`
+  );
+  const productData = await res.json();
 
-export async function getServerSideProps(context) {
-  const { id } = context.params;
-
-  try {
-    const res = await fetch(
-      `http:localhost:3008/api/products/single/product/${id}`
-    );
-    const data = await res.json();
-
-    if (res.ok && !data.error) {
-      return {
-        props: { product: data },
-      };
-    } else {
-      return {
-        props: { product: null },
-      };
-    }
-  } catch (err) {
-    console.error("SSR Fetch error:", err.message);
-    return {
-      props: { product: null },
-    };
+  if (!res.ok || !productData) {
+    return { notFound: true }; // show 404 if fetch failed
   }
+
+  // Pass the entire object as `product`
+  return {
+    props: {
+      product: productData,
+    },
+  };
 }

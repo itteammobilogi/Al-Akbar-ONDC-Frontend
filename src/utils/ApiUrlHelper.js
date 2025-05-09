@@ -3,7 +3,7 @@
 import axios from "axios";
 
 // const base_url = "http://localhost:3008";
-const base_url = "http://ondcapi.elloweb.com";
+const base_url = "https://ondcapi.elloweb.com";
 // const base_url = "https://plenty-eels-look.loca.lt";
 
 export const signup = async (data) => {
