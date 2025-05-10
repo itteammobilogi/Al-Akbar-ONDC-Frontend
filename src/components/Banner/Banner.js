@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 const bannerImages = [
   "/assets/ban1.jpg",
   "/assets/ban2.webp",
-  "/assets/ban3.webp",
+  // "/assets/ban3.webp",
 ];
 
 function PrevArrow(props) {

@@ -559,14 +559,17 @@ const ProductPage = () => {
     const parsedVariants = safeParse(product.variants).map((variant) => ({
       color: variant.color,
       stock: variant.stock,
-      images: variant.images || "", // IMPORTANT
+      image: variant.image || "", // IMPORTANT
     }));
 
     const parsed = {
       ...product,
       sizes: safeParse(product.sizes),
       colors: safeParse(product.colors),
-      images: safeParse(product.images),
+      images: Array.isArray(product.images)
+        ? product.images
+        : safeParse(product.images),
+
       categoryId: safeParse(product.categoryId),
       variants: parsedVariants,
       isFeatured: product.isFeatured === 1,
@@ -647,9 +650,15 @@ const ProductPage = () => {
       const stock = form[`variant_stock_${i}`]?.value;
       const image = variantImages[i];
 
+      const variant = { color, stock };
+
+      if (image) {
+        variant.image = image; // new file
+      } else if (editProduct?.variants?.[i]?.image) {
+        variant.image = editProduct.variants[i].image; // retain old path
+      }
+
       if (color && stock) {
-        const variant = { color, stock };
-        if (image) variant.image = image;
         variants.push(variant);
       }
     }
@@ -941,12 +950,35 @@ const ProductPage = () => {
                     placeholder="Stock"
                     className="bg-gray-800 border border-gray-700 p-2 rounded"
                   />
-                  <input
-                    type="file"
-                    name="images"
-                    multiple
-                    className="bg-gray-800 border border-gray-700 p-2 rounded text-white"
-                  />
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      Main Image
+                    </label>
+
+                    {editProduct?.images?.[0] ? (
+                      <div className="mb-2">
+                        <img
+                          src={`https://ondcapi.elloweb.com${editProduct.images[0]}`}
+                          alt="Main"
+                          className="w-12 h-12 object-cover rounded border"
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          Choose a file to update
+                        </p>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-400 italic">
+                        No image uploaded
+                      </span>
+                    )}
+
+                    <input
+                      type="file"
+                      name="images"
+                      multiple
+                      className="bg-gray-800 border border-gray-700 p-2 rounded text-white w-full"
+                    />
+                  </div>
                 </div>
 
                 <textarea
@@ -962,7 +994,7 @@ const ProductPage = () => {
                     <input
                       type="checkbox"
                       name="isFeatured"
-                      defaultChecked={editProduct?.isFeatured === 1}
+                      defaultChecked={editProduct?.isFeatured}
                       className="accent-teal-600"
                     />
                     Featured
@@ -972,7 +1004,7 @@ const ProductPage = () => {
                     <input
                       type="checkbox"
                       name="is_exclusive"
-                      defaultChecked={editProduct?.is_exclusive === 1}
+                      defaultChecked={editProduct?.is_exclusive}
                       className="accent-pink-600"
                     />
                     Exclusive
@@ -1051,9 +1083,9 @@ const ProductPage = () => {
                           multiple
                           className="bg-gray-800 border border-gray-700 p-2 rounded text-white w-full"
                         />
-                        {variant.images ? (
+                        {variant.image ? (
                           <img
-                            src={`http://ondcapi.elloweb.com/uploads${variant.images}`}
+                            src={`https://ondcapi.elloweb.com${variant.image}`}
                             alt="Variant"
                             className="mt-2 w-12 h-12 object-cover rounded border"
                           />
