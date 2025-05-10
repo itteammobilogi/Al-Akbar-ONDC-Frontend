@@ -155,7 +155,7 @@ export default function ProductDetail({ product }) {
                 className="w-full h-80 object-contain bg-white p-4"
               /> */}
               <img
-                src={`http://localhost:3008${
+                src={`https://ondcapi.elloweb.com${
                   selectedVariant?.images[0] || images[0]
                 }`}
                 alt={product?.name}
@@ -381,7 +381,7 @@ export default function ProductDetail({ product }) {
 }
 export async function getServerSideProps({ params }) {
   const res = await fetch(
-    `http://localhost:3008/api/products/single/product/${params.id}`
+    `https://ondcapi.elloweb.com/api/products/single/product/${params.id}`
   );
   const productData = await res.json();
 
