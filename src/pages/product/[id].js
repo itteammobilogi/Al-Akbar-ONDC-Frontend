@@ -234,8 +234,12 @@ export default function ProductDetail({ product }) {
                             ? "border-pink-500 ring-2 ring-pink-300"
                             : "border-gray-300"
                         }`}
-                        style={{ backgroundColor: variant.color.toLowerCase() }}
-                        title={variant.color}
+                        style={{
+                          backgroundColor: variant.color
+                            ? variant.color.toLowerCase()
+                            : "#000", // fallback color if null
+                        }}
+                        title={variant.color || "No Color"}
                       />
                     ))}
                   </div>
